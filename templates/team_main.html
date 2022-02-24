@@ -1,0 +1,146 @@
+
+
+{% block title %}Team Roster{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ results_dict['team_name'][0][0] }} {{ results_dict['team_name'][0][1] }}</h1>
+    <span><img src="../static/images/teams/{{ results_dict['team_name'][0][2] }}"></span>
+</div>
+<div class="affiliates">
+<table>
+    {% for team in results_dict['affiliates'] %}
+        <tr>
+            <td><img src="../static/images/teams/{{ team[3] }}"/></td>
+            <td><a href="./{{ team[6] }}"> {{ team[0] }} {{ team[2] }} ({{ team[1] }})</a></td>
+            <td>{{ team[4] }}</td>
+        </tr>
+    {% endfor %}
+</table>
+</div>
+<div class="team_history">
+<table>
+    <caption>Team Historical Record</caption>
+    <thead>
+        <tr>
+            <th>Year</th> <th>W</th> <th>L</th> <th>PCT</th> <th>Pos</th> <th><!--Made Playoffs--></th><th><!--Won Playoffs--></th> <th>Manager</th> <th>Best Hitter</th><th>Best Pitcher</th><th>Best Rookie</th>
+        </tr>
+    </thead>
+    {% for year in results_dict['team_history_record'] %}
+    <tr>
+        <td>{{ year[0] }}</td> <td>{{ year[2] }}</td> <td>{{ year[3] }}</td> <td>{{ year[5]}}</td> <td>{{ year[4]}}</td> <td>{{ year[11]}}</td> <td>{{ year[12]}}</td>
+        <td>{{ year[10]}}</td> <td><a href="../player/{{ year[13] }}">{{ year[7]}}</a></td> <td><a href="../player/{{ year[14] }}">{{ year[8]}}</a></td> <td><a href="../player/{{ year[15] }}">{{ year[9]}}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+
+
+    <h2>Current Season Roster</h2>
+<div class="roster" id="players">
+    <table>
+        <caption>Current Season Players</caption>
+        <thead>
+            <tr>
+                <th>Pic</th>
+                <th>Name</th>
+                <th>Pos</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in results_dict['roster'] %}
+                <tr>
+                    <td><img src="../static/images/players/player_{{ player[0] }}.png"></td>
+                    <td><a href="../player/{{ player[0] }}">{{ player[3] }}</a></td>
+                    <td>{{ player[1] }}</td>
+                    <td>{{ player[2] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="roster" id="staff">
+    <table>
+    <!-- THIS WHOLE TABLE IS NOT VERY 'DRY'.  #TODO LOOK FOR WAYS TO LOOP THIS? -->
+        <caption>Current Year Staff</caption>
+        <thead>
+            <tr>
+                <th>Pic</th> <th>Role</th> <th>Name</th>
+            </tr>
+        </thead>
+        {% if results_dict['current_staff'][0][4] == 0 %}  <!-- If there is no Manager, show name as Vacant -->
+            <tr>
+                <td></td> <td>Manager</td> <td>Vacant</td>
+            </tr>
+        {% elif results_dict['current_staff'][0][5] == 0  %} <!-- If Manager is not former player, no link to player profile -->
+            <tr>
+                <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][4] }}.png"/> </td> <td>Manager</td> <td>{{ results_dict['current_staff'][0][3] }}</td>
+            </tr>
+        {% else %} <!-- Else, if there is a manager who is a former player, link to his player page-->
+            <tr>
+            <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][4] }}.png"/> </td> <td>Manager</td> <td><a href="./player/{{ results_dict['current_staff'][0][5] }}">{{ results_dict['current_staff'][0][3] }}</a> </td>
+            </tr>
+        {% endif %}
+        {% if results_dict['current_staff'][0][10] == 0 %}  <!-- If there is no PC, show name as Vacant -->
+            <tr>
+                <td></td> <td>Pitching Coach</td> <td>Vacant</td>
+            </tr>
+        {% elif results_dict['current_staff'][0][11] == 0  %} <!-- If PC is not former player, no link to player profile -->
+            <tr>
+                <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][10] }}.png"/> </td> <td>Pitching Coach</td> <td>{{ results_dict['current_staff'][0][9] }}</td>
+            </tr>
+        {% else %} <!-- Else, if there is a PC who is a former player, link to his player page-->
+            <tr>
+            <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][10] }}.png"/> </td> <td>Pitching Coach</td> <td><a href="./player/{{ results_dict['current_staff'][0][11] }}">{{ results_dict['current_staff'][0][9] }}</a> </td>
+            </tr>
+        {% endif %}
+        {% if results_dict['current_staff'][0][13] == 0 %}  <!-- If there is no HC, show name as Vacant -->
+            <tr>
+                <td></td> <td>Hitting Coach</td> <td>Vacant</td>
+            </tr>
+        {% elif results_dict['current_staff'][0][14] == 0  %} <!-- If HC is not former player, no link to player profile -->
+            <tr>
+                <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][13] }}.png"/> </td> <td>Hitting Coach</td> <td>{{ results_dict['current_staff'][0][12] }}</td>
+            </tr>
+        {% else %} <!-- Else, if there is a HC who is a former player, link to his player page-->
+            <tr>
+            <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][13] }}.png"/> </td> <td>Hitting Coach</td> <td><a href="./player/{{ results_dict['current_staff'][0][14] }}">{{ results_dict['current_staff'][0][12] }}</a> </td>
+            </tr>
+        {% endif %}
+        {% if results_dict['current_staff'][0][16] == 0 %}  <!-- If there is no BC, skip the row -->
+
+        {% elif results_dict['current_staff'][0][17] == 0  %} <!-- If BC is not former player, no link to player profile -->
+            <tr>
+                <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][16] }}.png"/> </td> <td>Bench Coach</td> <td>{{ results_dict['current_staff'][0][15] }}</td>
+            </tr>
+        {% else %} <!-- Else, if there is a BC who is a former player, link to his player page-->
+            <tr>
+            <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][16] }}.png"/> </td> <td>Bench Coach</td> <td><a href="./player/{{ results_dict['current_staff'][0][17] }}">{{ results_dict['current_staff'][0][15] }}</a> </td>
+            </tr>
+        {% endif %}
+        {% if results_dict['current_staff'][0][25] == 0 %}  <!-- If there is no 1b, skip the row -->
+
+        {% elif results_dict['current_staff'][0][26] == 0  %} <!-- If 1b is not former player, no link to player profile -->
+            <tr>
+                <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][25] }}.png"/> </td> <td>1B Coach</td> <td>{{ results_dict['current_staff'][0][24] }}</td>
+            </tr>
+        {% else %} <!-- Else, if there is a 1b who is a former player, link to his player page-->
+            <tr>
+            <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][25] }}.png"/> </td> <td>1B Coach</td> <td><a href="./player/{{ results_dict['current_staff'][0][26] }}">{{ results_dict['current_staff'][0][24] }}</a> </td>
+            </tr>
+        {% endif %}
+        {% if results_dict['current_staff'][0][28] == 0 %}  <!-- If there is no 3b, skip the row -->
+
+        {% elif results_dict['current_staff'][0][29] == 0  %} <!-- If 3b is not former player, no link to player profile -->
+            <tr>
+                <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][28] }}.png"/> </td> <td>3B Coach</td> <td>{{ results_dict['current_staff'][0][27] }}</td>
+            </tr>
+        {% else %} <!-- Else, if there is a 3b who is a former player, link to his player page-->
+            <tr>
+            <td><img src="../static/images/players/coach_{{ results_dict['current_staff'][0][28] }}.png"/> </td> <td>3B Coach</td> <td><a href="./player/{{ results_dict['current_staff'][0][29] }}">{{ results_dict['current_staff'][0][27] }}</a> </td>
+            </tr>
+        {% endif %}
+    </table> <!-- #TODO Throws an error when selecting a minor league team having to do "list object not having element 0. -->
+</div>
+{% endblock %}

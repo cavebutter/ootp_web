@@ -1,0 +1,28 @@
+{% block title %} <h1>The {{ results_dict['starter_batters'][0][5] }} {{ results_dict['starter_batters'][0][7] }}</h1>{% endblock %}
+<img src="../../static/images/teams/{{ results_dict['team_name'][0][2] }}"/>
+<div class="record">
+<p><strong>Record:</strong>  {{ results_dict['team_year_record'][0][2] }} - {{ results_dict['team_year_record'][0][3] }} ({{ results_dict['team_year_record'][0][5] }})</p>
+<p>Finished #{{ results_dict['team_year_record'][0][4] }} in {{ results_dict['team_year_record'][0][7] }} {{ results_dict['team_year_record'][0][8] }}</p>
+</div>
+
+<div class="best_players">
+    <table>
+        <caption>{{ results_dict['team_year_record'][0][1] }}'s Best Players (By WAR)</caption>
+        <tr>
+            {% for player in results_dict['best_players'] %}
+            <td><a href="../../player/{{ player[2] }}"><img src="../../static/images/players/player_{{ player[2] }}.png"/></a><br><span class="best_player_name">{{ player[0] }}</span> </td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+
+<div class="testing">
+<p>Starters {{ results_dict['bat_starters'] }}</p>
+<p>Starter_IDs  {{ results_dict['bat_starter_ids'] }}</p>
+<p> Team Name: {{ results_dict['team_name'] }}</p>
+<p>Starter Batters :{{ results_dict['starter_batters'] }}
+<p>Bench Batters{{ results_dict['bench_batters'] }}
+<p>Starting P stats  {{ results_dict['starting_p'] }}</p>
+<p>Bullpen P stats  {{ results_dict['bullpen_p'] }}</p>
+<p>Best Players  {{ results_dict['best_players'] }}</p>
+<p>Team Record  {{ results_dict['team_year_record'] }}</p></div>
