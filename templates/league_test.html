@@ -1,0 +1,33 @@
+<p>Current Date:  {{ world_date }}</p>
+<p>ML List : {{ ml_list }}</p>
+
+<p> Results Dict {{ results_dict }}</p>
+
+{% for league in results_dict['leagues'] %}
+    {% if league[5] == 0 %}
+    <ul>
+    <li>{{ league[1] }}</li>
+    </ul>
+    {% endif %}
+{% endfor %}
+<p>YEAR:  {{ year }}</p>
+<p>DIVISIONS  {{ divisions }}</p>
+<p>Div Records  {{ div_records }}</p>
+<p>Div Records[0]  {{ div_records[0] }}</p>
+<p>Div Leaders Stats BATTING {{ leaders_stats_b }}</p>
+Div Leaders Stats Batting [1]['H'][2][0]:  {{ leaders_stats_b[1]['H'][2][0] }}
+<p>Div Leaders Stats PITCHING  {{ leaders_stats_p }}</p>
+<p>LEAGUE INFO:  {{info}}
+</p>
+{% for key, value in div_records.items() %}
+    <table>
+    <tr>
+        <th>{{ key }}</th>
+    </tr>
+    {% for item in value %}
+    <tr>
+    <td>{{ item[11] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endfor %}

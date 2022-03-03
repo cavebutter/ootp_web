@@ -8,13 +8,13 @@
         {% if results_dict['bio'][0][22] == None %}
         {% else %}<img src="../static/images/teams/{{ results_dict['bio'][0][22] }}"/>
         {% endif %}
-        <h2>#{{ results_dict['bio'][0][7] }}  {{ results_dict['bio'][0][12] }} {{ results_dict['bio'][0][13] }}</h2> <!-- Uniform #, Team name -->
+        <h2>#{{ results_dict['bio'][0][7] }}  {{ results_dict['bio'][0][12] }} {% if results_dict['bio'] == None %}{% else %}{{ results_dict['bio'][0][13] }}{% endif %}</h2> <!-- Uniform #, Team name -->
     </div>
     <div class="player_demographics">
         <div id="player_demographics_1">Bats: {{ results_dict['bio'][0][3] }}  Throws: {{ results_dict['bio'][0][4] }}</div>
         <div id="player_demographics_2">Age:  {{ results_dict['bio'][0][9] }}  Height:  {{ results_dict['bio'][0][5] }}  Weight:  {{ results_dict['bio'][0][6] }}</div>
         <div id="player_demographics_3">From {{ results_dict['bio'][0][10] }}, {{ results_dict['bio'][0][11] }}</div>
-        <div id="player_emographics_4">Drafted #{{ results_dict['bio'][0][18] }} (Round {{ results_dict['bio'][0][17] }}) by {{ results_dict['bio'][0][24] }} in the {% if results_dict['bio'][0][16] ==0 %} Inuagural {% else %} {{ results_dict['bio'][0][16] }}{% endif %} Amateur Draft. (# {{ results_dict['bio'][0][19] }} overall)</div>
+        <div id="player_emographics_4">Drafted #{{ results_dict['bio'][0][18] }} (Round {{ results_dict['bio'][0][17] }}) by <a href="../team/{{ results_dict['bio'][0][26] }}"> {{ results_dict['bio'][0][24] }}</a> in the {% if results_dict['bio'][0][16] ==0 %} Inuagural {% else %} {{ results_dict['bio'][0][16] }}{% endif %} Amateur Draft. (# {{ results_dict['bio'][0][19] }} overall)</div>
     </div>
     {% if results_dict['bio'][0][25]==1 %} <!--Only display pitching stats if player is P -->
         <div class="pro_pitching_basic">
@@ -29,7 +29,7 @@
                 </thead>
                 {% for year in results_dict['maj_pitch_ovr'] %}
                     <tr>
-                        <td>{{ year[0] }}</td> <td>{{ year[3] }}</td> <td>{{ year[2] }}</td> <td>{{ year[20] }}</td> <td>{{ year[21] }}</td> <td>{{ year[18] }}</td>
+                        <td>{{ year[0] }}</td> <td><a href="../team/{{ year[65] }}/{{ year[0] }}"> {{ year[3] }}</a></td> <td>{{ year[2] }}</td> <td>{{ year[20] }}</td> <td>{{ year[21] }}</td> <td>{{ year[18] }}</td>
                         <td>{{ year[19] }}</td> <td>{{ year[40] }}</td> <td>{{ year[41] }}</td> <td>{{ year[22] }}</td> <td>{{ year[4] }}.{{ year[17] }}</td> <td>{{ year[7] }}</td>
                         <td>{{ year[12] }}</td> <td>{{ year[13] }}</td> <td>{{ year[28] }}</td> <td>{{ year[11] }}</td> <td>{{ year[31] }}</td> <td>{{ year[8] }}</td>
                         <td>{{ year[33] }}</td> <td>{{ year[29] }}</td> <td>{{ year[32] }}</td> <td>{{ year[9] }}</td> <td>{{ year[59] }}</td> <td>{{ year[55] }}</td>
@@ -60,7 +60,7 @@
                 </thead>
                 {% for year in results_dict['min_pitch_ovr'] %}
                     <tr>
-                        <td>{{ year[0] }}</td> <td>{{ year[3] }}</td> <td>{{ year[2] }}</td> <td>{{ year[20] }}</td> <td>{{ year[21] }}</td> <td>{{ year[18] }}</td>
+                        <td>{{ year[0] }}</td> <td><a href="../team/{{ year[65] }}/{{ year[0] }}"> {{ year[3] }}</a></td> <td>{{ year[2] }}</td> <td>{{ year[20] }}</td> <td>{{ year[21] }}</td> <td>{{ year[18] }}</td>
                         <td>{{ year[19] }}</td> <td>{{ year[40] }}</td> <td>{{ year[41] }}</td> <td>{{ year[22] }}</td> <td>{{ year[4] }}.{{ year[17] }}</td> <td>{{ year[7] }}</td>
                         <td>{{ year[12] }}</td> <td>{{ year[13] }}</td> <td>{{ year[28] }}</td> <td>{{ year[11] }}</td> <td>{{ year[31] }}</td> <td>{{ year[8] }}</td>
                         <td>{{ year[33] }}</td> <td>{{ year[29] }}</td> <td>{{ year[32] }}</td> <td>{{ year[9] }}</td> <td>{{ year[59] }}</td> <td>{{ year[55] }}</td>
@@ -92,7 +92,7 @@
             </thead>
             {% for year in results_dict['maj_bat_ovr'] %}
                 <tr>
-                    <td>{{ year[0] }}</td> <td>{{ year[3] }}</td> <td>{{ year[2] }}</td> <td>{{ year[4] }}</td> <td>{{ year[6] }}</td> <td>{{ year[5] }}</td>
+                    <td>{{ year[0] }}</td> <td><a href="../team/{{ year[37] }}/{{ year[0] }}"> {{ year[3] }}</a></td> <td>{{ year[2] }}</td> <td>{{ year[4] }}</td> <td>{{ year[6] }}</td> <td>{{ year[5] }}</td>
                     <td>{{ year[7] }}</td> <td>{{ year[8] }}</td> <td>{{ year[9] }}</td> <td>{{ year[10] }}</td> <td>{{ year[11] }}</td> <td>{{ year[12] }}</td>
                     <td>{{ year[13] }}</td> <td>{{ year[14] }}</td> <td>{{ year[15] }}</td> <td>{{ year[16] }}</td> <td>{{ year[24] | trim }}</td> <td>{{ year[27] }}</td>
                     <td>{{ year[29] }}</td> <td>{{ year[30] }}</td> <td>{{ year[21] }}</td> <td>{{ year[18] }}</td> <td>{{ year[19] }}</td> <td>{{ year[20] }}</td> <td>{{ year[17] }}</td>
@@ -122,7 +122,7 @@
             </thead>
             {% for year in results_dict['maj_bat_ovr'] %}
             <tr>
-                <td>{{ year[0] }}</td> <td>{{ year[3] }}</td> <td>{{ year[2] }}</td> <td>{{ year[4] }}</td> <td>{{ year[6] }}</td> <td>{{ year[33] }}</td> <td>{{ year[28] }}</td>
+                <td>{{ year[0] }}</td> <td><a href="../team/{{ year[37] }}/{{ year[0] }}"> {{ year[3] }}</a></td> <td>{{ year[2] }}</td> <td>{{ year[4] }}</td> <td>{{ year[6] }}</td> <td>{{ year[33] }}</td> <td>{{ year[28] }}</td>
                 <td>{{ year[32] }}</td> <td>{{ year[31] }}</td> <td>{{ year[25] }}</td> <td>{{ year[26] }}</td> <td>{{ year[34] }}</td> <td>{{ year[35] }}</td> <td>{{ year[36] }}</td>
                 <td>{{ year[23] }}</td>
             </tr>
@@ -150,7 +150,7 @@
             </thead>
             {% for year in results_dict['min_bat_ovr'] %}
                 <tr>
-                    <td>{{ year[0] }}</td> <td>{{ year[3] }}</td> <td>{{ year[2] }}</td> <td>{{ year[4] }}</td> <td>{{ year[6] }}</td> <td>{{ year[5] }}</td>
+                    <td>{{ year[0] }}</td> <td><a href="../team/{{ year[37] }}/{{ year[0] }}"> {{ year[3] }}</a></td> <td>{{ year[2] }}</td> <td>{{ year[4] }}</td> <td>{{ year[6] }}</td> <td>{{ year[5] }}</td>
                     <td>{{ year[7] }}</td> <td>{{ year[8] }}</td> <td>{{ year[9] }}</td> <td>{{ year[10] }}</td> <td>{{ year[11] }}</td> <td>{{ year[12] }}</td>
                     <td>{{ year[13] }}</td> <td>{{ year[14] }}</td> <td>{{ year[15] }}</td> <td>{{ year[16] }}</td> <td>{{ year[24] | trim }}</td> <td>{{ year[27] }}</td>
                     <td>{{ year[29] }}</td> <td>{{ year[30] }}</td> <td>{{ year[21] }}</td> <td>{{ year[18] }}</td> <td>{{ year[19] }}</td> <td>{{ year[20] }}</td> <td>{{ year[17] }}</td>
@@ -179,7 +179,7 @@
             </thead>
             {% for year in results_dict['min_bat_ovr'] %}
             <tr>
-                <td>{{ year[0] }}</td> <td>{{ year[3] }}</td> <td>{{ year[2] }}</td> <td>{{ year[4] }}</td> <td>{{ year[6] }}</td> <td>{{ year[33] }}</td> <td>{{ year[28] }}</td>
+                <td>{{ year[0] }}</td> <td><a href="../team/{{ year[37] }}/{{ year[0] }}"> {{ year[3] }}</a></td> <td>{{ year[2] }}</td> <td>{{ year[4] }}</td> <td>{{ year[6] }}</td> <td>{{ year[33] }}</td> <td>{{ year[28] }}</td>
                 <td>{{ year[32] }}</td> <td>{{ year[31] }}</td> <td>{{ year[25] }}</td> <td>{{ year[26] }}</td> <td>{{ year[34] }}</td> <td>{{ year[35] }}</td> <td>{{ year[36] }}</td>
                 <td>{{ year[23] }}</td>
             </tr>

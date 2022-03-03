@@ -1,4 +1,4 @@
-{% block title %} <h1>The {{ results_dict['starter_batters'][0][5] }} {{ results_dict['starter_batters'][0][7] }}</h1>{% endblock %}
+{% block title %} <h1>The {{ year }} {{ results_dict['team_name'][0][0] }} {{ results_dict['team_name'][0][1] }}</h1>{% endblock %}
 <img src="../../static/images/teams/{{ results_dict['team_name'][0][2] }}"/>
 <div class="record">
 <p><strong>Record:</strong>  {{ results_dict['team_year_record'][0][2] }} - {{ results_dict['team_year_record'][0][3] }} ({{ results_dict['team_year_record'][0][5] }})</p>
@@ -15,13 +15,220 @@
         </tr>
     </table>
 </div>
+<div class="team_year_stats">
+    <h2>Team Batting</h2>
+    <table>
+        {% if results_dict['bat_starter_ids'] == '()'  %}
+        {% else %}
+        <thead>
+        <tr>
+            <th colspan="13" class="separator">Starters (based on games played at position)</th>
+        </tr>
+        <tr>
+            <th>Pos</th>
+            <th>Name</th>
+            <th>G</th>
+            <th>AB</th>
+            <th>R</th>
+            <th>H</th>
+            <th>BB</th>
+            <th>K</th>
+            <th>AVG</th>
+            <th>OBP</th>
+            <th>SLG</th>
+            <th>wOBA</th>
+            <th>WAR</th>
+        </tr>
+        </thead>
+        {% for player in results_dict['starter_batters'] %}
+            <tr>
+            <td>{{ player[3] }}</td>
+            <td><a href="../../player/{{ player[0] }}">{{ player[1] }}</a></td>
+            <td>{{ player[2] }}</td>
+            <td>{{ player[8] }}</td>
+            <td>{{ player[17] }}</td>
+            <td>{{ player[9] }}</td>
+            <td>{{ player[11] }}</td>
+            <td>{{ player[10] }}</td>
+            <td>{{ player[12] }}</td>
+            <td>{{ player[14] }}</td>
+            <td>{{ player[13] }}</td>
+            <td>{{ player[15] }}</td>
+            <td>{{ player[16] }}</td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+    <tr>
+        <th colspan="13" class="separator">Bench</th>
+    </tr>
+    <tr>
+            <th>Pos</th>
+            <th>Name</th>
+            <th>G</th>
+            <th>AB</th>
+            <th>R</th>
+            <th>H</th>
+            <th>BB</th>
+            <th>K</th>
+            <th>AVG</th>
+            <th>OBP</th>
+            <th>SLG</th>
+            <th>wOBA</th>
+            <th>WAR</th>
+        </tr>
+    {% for player in results_dict['bench_batters'] %}
+        <tr>
+            <td>{{ player[3] }}</td>
+            <td><a href="../../player/{{ player[0] }}">{{ player[1] }}</a></td>
+            <td>{{ player[2] }}</td>
+            <td>{{ player[8] }}</td>
+            <td>{{ player[17] }}</td>
+            <td>{{ player[9] }}</td>
+            <td>{{ player[11] }}</td>
+            <td>{{ player[10] }}</td>
+            <td>{{ player[12] }}</td>
+            <td>{{ player[14] }}</td>
+            <td>{{ player[13] }}</td>
+            <td>{{ player[15] }}</td>
+            <td>{{ player[16] }}</td>
+            </tr>
+    {% endfor %}
 
+    </table>
+    <h2>Team Pitching</h2>
+    <table>
+        <thead>
+        <tr>
+            <th colspan="25" class="separator">Starting Rotation</th>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <th>W</th>
+            <th>L</th>
+            <th>ERA</th>
+            <th>G</th>
+            <th>GS</th>
+            <th>CG</th>
+            <th>SHO</th>
+            <th>SV</th>
+            <th>IP</th>
+            <th>H</th>
+            <th>R</th>
+            <th>ER</th>
+            <th>HR</th>
+            <th>BB</th>
+            <th>K</th>
+            <th>HBP</th>
+            <th>BK</th>
+            <th>WP</th>
+            <th>ERA+</th>
+            <th>FIP</th>
+            <th>WHIP</th>
+            <th>K9</th>
+            <th>BB9</th>
+            <th>K/BB</th>
+            <th>WAR</th>
+        </tr>
+        </thead>
+        {% for player in results_dict['starting_p'] %}
+            <tr>
+            <td><a href="../../player/{{ player[0] }}">{{ player[1] }}</a> </td>
+            <td>{{ player[2] }}</td>
+            <td>{{ player[3] }}</td>
+            <td>{{ player[4] }}</td>
+            <td>{{ player[5] }}</td>
+            <td>{{ player[6] }}</td>
+            <td>{{ player[7] }}</td>
+            <td>{{ player[8] }}</td>
+            <td>{{ player[9] }}</td>
+            <td>{{ player[10] }}</td>
+            <td>{{ player[11] }}</td>
+            <td>{{ player[12] }}</td>
+            <td>{{ player[13] }}</td>
+            <td>{{ player[14] }}</td>
+            <td>{{ player[15] }}</td>
+            <td>{{ player[17] }}</td>
+            <td>{{ player[18] }}</td>
+            <td>{{ player[19] }}</td>
+            <td>{{ player[20] }}</td>
+            <td>{{ player[22] }}</td>
+            <td>{{ player[23] }}</td>
+            <td>{{ player[24] }}</td>
+            <td>{{ player[25] }}</td>
+            <td>{{ player[26] }}</td>
+            <td>{{ player[27] }}</td>
+            <td>{{ player[28] }}</td>
+            </tr>
+        {% endfor %}
+        <tr><th colspan="25" class="separator">Bullpen</th></tr>
+        <tr>
+            <th>Name</th>
+            <th>W</th>
+            <th>L</th>
+            <th>ERA</th>
+            <th>G</th>
+            <th>GS</th>
+            <th>CG</th>
+            <th>SHO</th>
+            <th>SV</th>
+            <th>IP</th>
+            <th>H</th>
+            <th>R</th>
+            <th>ER</th>
+            <th>HR</th>
+            <th>BB</th>
+            <th>K</th>
+            <th>HBP</th>
+            <th>BK</th>
+            <th>WP</th>
+            <th>ERA+</th>
+            <th>FIP</th>
+            <th>WHIP</th>
+            <th>K9</th>
+            <th>BB9</th>
+            <th>K/BB</th>
+            <th>WAR</th>
+        </tr>
+        {% for player in results_dict['bullpen_p'] %}
+             <tr>
+            <td><a href="../../player/{{ player[0] }}">{{ player[1] }}</a> </td>
+            <td>{{ player[2] }}</td>
+            <td>{{ player[3] }}</td>
+            <td>{{ player[4] }}</td>
+            <td>{{ player[5] }}</td>
+            <td>{{ player[6] }}</td>
+            <td>{{ player[7] }}</td>
+            <td>{{ player[8] }}</td>
+            <td>{{ player[9] }}</td>
+            <td>{{ player[10] }}</td>
+            <td>{{ player[11] }}</td>
+            <td>{{ player[12] }}</td>
+            <td>{{ player[13] }}</td>
+            <td>{{ player[14] }}</td>
+            <td>{{ player[15] }}</td>
+            <td>{{ player[17] }}</td>
+            <td>{{ player[18] }}</td>
+            <td>{{ player[19] }}</td>
+            <td>{{ player[20] }}</td>
+            <td>{{ player[22] }}</td>
+            <td>{{ player[23] }}</td>
+            <td>{{ player[24] }}</td>
+            <td>{{ player[25] }}</td>
+            <td>{{ player[26] }}</td>
+            <td>{{ player[27] }}</td>
+            <td>{{ player[28] }}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+</div>
 <div class="testing">
 <p>Starters {{ results_dict['bat_starters'] }}</p>
 <p>Starter_IDs  {{ results_dict['bat_starter_ids'] }}</p>
 <p> Team Name: {{ results_dict['team_name'] }}</p>
 <p>Starter Batters :{{ results_dict['starter_batters'] }}
 <p>Bench Batters{{ results_dict['bench_batters'] }}
+<p>Starting P IDs:  {{ results_dict['starting_p_ids'] }}</p>
 <p>Starting P stats  {{ results_dict['starting_p'] }}</p>
 <p>Bullpen P stats  {{ results_dict['bullpen_p'] }}</p>
 <p>Best Players  {{ results_dict['best_players'] }}</p>

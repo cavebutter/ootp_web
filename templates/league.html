@@ -1,0 +1,76 @@
+<h1>{{ info[0][0] }}</h1>
+<img src="../static/images/leagues/{{ info[0][2] }}">
+<h3>Today's Date: {{ world_date }}</h3>
+
+<h2>Current Standings</h2>
+{% for key, value in div_records.items() %}
+    <table class="standings">
+    <caption> {{ key }} </caption>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Team</th>
+        <th>G</th>
+        <th>W</th>
+        <th>L</th>
+        <th>Pct</th>
+        <th>GB</th>
+
+    </tr>
+    </thead>
+    {% for team in value %}
+        {% if team[5] > 0 %}
+    <tr>
+        <td>{{ team[5] }}</td>
+        <td><a href="../team/{{ team[1] }}"> {{ team[11] }} {{ team[12] }}</a></td>
+        <td>{{ team[2] }}</td>
+        <td>{{ team[3] }}</td>
+        <td>{{ team[4] }}</td>
+        <td>{{ team[6] }}</td>
+        <td>{{ team[7] }}</td>
+
+    </tr>
+        {% endif %}
+    {% endfor %}
+    </table>
+{% endfor %}
+
+<h2>League Leaders</h2>
+<h3>Batting Leaders</h3>
+{% for division, dict in leaders_stats_b.items() %}
+<h4>{{ division }}</h4>
+    {% for key, value in dict.items() %}
+    <table class="leaderboard">
+    <thead>
+    <tr>
+        <th>{{ key }}</th>
+    </tr>
+    </thead>
+        {% for player in value %}
+            <tr>
+                <td><a href="../player/{{ player[1] }}"> {{ player[0] }} ({{ player[5] }})</a></td>
+            <td>{{ player[6] }}</td>
+            </tr>
+        {% endfor %}
+        {% endfor %}
+    </table>
+    {% endfor %}
+<h3>Pitching Leaders</h3>
+{% for division, dict in leaders_stats_p.items() %}
+<h4>{{ division }}</h4>
+    {% for key, value in dict.items() %}
+    <table class="leaderboard">
+    <thead>
+    <tr>
+        <th>{{ key }}</th>
+    </tr>
+    </thead>
+        {% for player in value %}
+            <tr>
+                <td><a href="../player/{{ player[1] }}"> {{ player[0] }} ({{ player[5] }})</a></td>
+            <td>{{ player[6] }}</td>
+            </tr>
+        {% endfor %}
+        {% endfor %}
+    </table>
+    {% endfor %}

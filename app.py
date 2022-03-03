@@ -2,7 +2,7 @@ import os
 import view_sql.queries as q
 from flask import Flask, render_template
 from flask_mysql_connector import MySQL
-from os import getenv
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,25 +20,8 @@ app.config["MYSQL_HOST"] = db_host
 
 mysql = MySQL(app)
 
-EXAMPLE_SQL = """SELECT players.first_name, players.last_name FROM players LIMIT 10;"""
-
-# using the new_cursor() method
-@app.route('/new_cursor')
-def new_cursor():
-    cur = mysql.new_cursor(dictionary=True)
-    cur.execute(EXAMPLE_SQL)
-    output = cur.fetchall()
-    return str(output)
-
-
-# using the connection property
-@app.route('/connection')
-def connection():
-    conn = mysql.connection
-    cur = conn.cursor()
-    cur.execute(EXAMPLE_SQL)
-    output = cur.fetchall()
-    return str(output)
+#  TODO FIX THE LEADING 0's!!!
+#  TODO Batting Summary WAR looks like it is not summed
 
 @app.route('/team/<team_id>')
 def team_page(team_id):
@@ -81,18 +64,6 @@ def max_g_per_pos(team_id, year):
         starters.append(result)
     return starters
 
-def max_gs(team_id, year):
-    conn = mysql.connection
-    cur = conn.cursor()
-    cur.execute(f"""
-    SELECT pi.player_id, pi.gs
-    FROM rb1.CalcPitching pi
-    WHERE pi.team_id = {team_id} AND pi.year = {year}
-    ORDER BY pi.gs DESC 
-    LIMIT 5""")
-    result = cur.fetchall()
-    return result
-
 @app.route('/team/<team_id>/<year>')
 def team_year(team_id, year):
     results_dict = {}
@@ -128,8 +99,10 @@ def team_year(team_id, year):
     cur.execute(q.team_year_record(team_id, year))
     ty_record = cur.fetchall()
     results_dict['team_year_record'] = ty_record
-    return render_template('team_year.html', results_dict=results_dict)
+    return render_template('team_year.html', results_dict=results_dict, year=year)
 
+
+#  TODO Add retirement, retirement year, and turned coach to bio
 @app.route('/player/<player_id>')
 def player_page(player_id):
     results_dict = {}
@@ -182,13 +155,67 @@ def player_page(player_id):
     results_dict['pitch_summary'] = career_pitch_summary
     return render_template('player.html', results_dict=results_dict)
 
-#@app.route('/')
-#def hello_world():  # put application's code here
-#    return str(output)
+@app.route('/league/<league_id>')
+#  Current league information with link to history
+def league(league_id):
+    results_dict = {}
+    conn = mysql.connection
+    cur = conn.cursor()
+    cur.execute(q.current_world_date())
+    cur_date = cur.fetchone()
+    year = cur_date[0].year
+    world_date = cur_date[0].strftime("%B %d, %Y")
+    cur.execute(q.get_affiliated_leagues())
+    leagues = cur.fetchall()
+    results_dict['leagues'] = leagues
+    cur.execute(q.get_batting_stats_from_map())
+    stats = cur.fetchall()
+    cur.execute(q.get_divs_from_league(league_id))
+    divisions = cur.fetchall()
+#    divisions = [division[0] for division in divisions]
+    div_records = {}
+    #  BATTING STATS
+    leaders_stats_b = {}
+    for division in divisions:
+        div_id = division[0]
+        div_name = division[1]
+        cur.execute(q.get_div_records(league_id,div_id))
+        record = cur.fetchall()
+        div_records[div_name] = record
+        leaders_stats_b[div_name] = {}
+        for stat in stats:
+            cur.execute(q.get_current_league_bat_leaders(league_id, div_id, year, stat[2]))
+            leader_stat_b = cur.fetchall()
+            leaders_stats_b[div_name][stat[1]] = leader_stat_b
+    #  PITCHING STATS
+    cur.execute(q.get_current_pitch_stats_asc_from_map())
+    pitch_stats_asc = cur.fetchall()
+    cur.execute(q.get_current_pitch_stats_desc_from_map())
+    pitch_stats_desc = cur.fetchall()
+    leaders_stats_p = {}
+    for division in divisions:
+        div_id = division[0]
+        div_name = division[1]
+        leaders_stats_p[div_name] = {}
+        for stat in pitch_stats_asc:
+            cur.execute(q.get_current_pitch_leaders_asc(league_id,div_id,year,stat[2]))
+            leader_stat_p = cur.fetchall()
+            leaders_stats_p[div_name][stat[1]] = leader_stat_p
+        for stat in pitch_stats_desc:
+            cur.execute(q.get_current_pitch_leaders_desc(league_id, div_id, year, stat[2]))
+            leader_stat_p = cur.fetchall()
+            leaders_stats_p[div_name][stat[1]] = leader_stat_p
+    cur.execute(q.get_league_info(league_id))
+    info = cur.fetchall()
+    return render_template('league.html', info=info, year=year, world_date=world_date, leaders_stats_p=leaders_stats_p, leaders_stats_b=leaders_stats_b, results_dict=results_dict, div_records=div_records, divisions=divisions)
+#  NOTE that this function is designed specifically for this league structure- with no subleagues
+
 
 #  TODO change free agent row in teams table to blank nickname instead of null
 #  TODO turn schools.xml file from game into a db table
 #  TODO summary queries to union with player stats queries
 #  TODO Current year batting and pitching stats for current roster year
+#  TODO in leagues, function to return count of divisions to template that can be used to determine the number of standings and leaders tables to build
+#  TODO remove bad stats from league.html template
 if __name__ == '__main__':
     app.run()

@@ -22,7 +22,7 @@ def player_bio(player_id):
     players.team_id, players.age, cities.name, states.name, teams.name, teams.nickname, positions.pos_name,
     players.college, players.draft_year, players.draft_round, players.draft_pick,
     players.draft_overall_pick, players.turned_coach, players.hall_of_fame, teams.logo_file_name, players.player_id, t2.draft_team
-    , players.position
+    , players.position, players.draft_team_id
     FROM players INNER JOIN cities on cities.city_id = players.city_of_birth_id
     INNER JOIN teams ON teams.team_id = players.team_id
     INNER JOIN positions ON players.position = positions.position
@@ -73,7 +73,8 @@ def player_major_bat_history_ovr(player_id):
         , b.woba
         , b.wRAA
         , b.wRC
-        , b.`wRC+`
+        , b.wRCplus
+        , t.team_id
     FROM CalcBatting b INNER JOIN players p on b.player_id = p.player_id
     INNER JOIN teams t ON b.team_id = t.team_id
     INNER JOIN leagues l on b.league_id = l.league_id
@@ -119,7 +120,7 @@ def player_major_bat_history_VL(player_id):
         , b.woba
         , b.wRAA
         , b.wRC
-        , b.`wRC+`
+        , b.wRCplus
     FROM CalcBatting_L b INNER JOIN players p on b.player_id = p.player_id
     INNER JOIN teams t ON b.team_id = t.team_id
     INNER JOIN leagues l on b.league_id = l.league_id
@@ -165,7 +166,7 @@ def player_major_bat_history_VR(player_id):
         , b.woba
         , b.wRAA
         , b.wRC
-        , b.`wRC+`
+        , b.wRCplus
     FROM CalcBatting_R b INNER JOIN players p on b.player_id = p.player_id
     INNER JOIN teams t ON b.team_id = t.team_id
     INNER JOIN leagues l on b.league_id = l.league_id
@@ -211,7 +212,8 @@ def player_minors_bat_history_ovr(player_id):
         , b.woba
         , b.wRAA
         , b.wRC
-        , b.`wRC+`
+        , b.wRCplus
+        , t.team_id
     FROM CalcBatting b INNER JOIN players p on b.player_id = p.player_id
     INNER JOIN teams t ON b.team_id = t.team_id
     INNER JOIN leagues l on b.league_id = l.league_id
@@ -257,7 +259,7 @@ def player_minors_bat_history_VL(player_id):
         , b.woba
         , b.wRAA
         , b.wRC
-        , b.`wRC+`
+        , b.wRCplus
     FROM CalcBatting_L b INNER JOIN players p on b.player_id = p.player_id
     INNER JOIN teams t ON b.team_id = t.team_id
     INNER JOIN leagues l on b.league_id = l.league_id
@@ -303,7 +305,7 @@ def player_minors_bat_history_VR(player_id):
         , b.woba
         , b.wRAA
         , b.wRC
-        , b.`wRC+`
+        , b.wRCplus
     FROM CalcBatting_R b INNER JOIN players p on b.player_id = p.player_id
     INNER JOIN teams t ON b.team_id = t.team_id
     INNER JOIN leagues l on b.league_id = l.league_id
@@ -378,6 +380,7 @@ def player_major_pitch_history_ovr(player_id):
     , p.ERAminus as `ERA-`
     , p.ERAplus as `ERA+`
     , p.FIPminus as `FIP-`
+    , t.team_id
 
 FROM CalcPitching p INNER JOIN teams t on p.team_id = t.team_id
 INNER JOIN players ON players.player_id = p.player_id
@@ -600,6 +603,7 @@ def player_minor_pitch_history_ovr(player_id):
     , p.ERAminus as `ERA-`
     , p.ERAplus as `ERA+`
     , p.FIPminus as `FIP-`
+    , t.team_id
 
 FROM CalcPitching p INNER JOIN teams t on p.team_id = t.team_id
 INNER JOIN players ON players.player_id = p.player_id
@@ -788,7 +792,7 @@ def player_career_bat_summary(player_id):
     , '--'as woba
     , '--' as wraa
     , '--' as wrc
-    , '--' as `wrc+`
+    , '--' as wRCplus
     , COUNT(*) as yrs
     , t.abbr as `team`
     , l.abbr as `lg`
@@ -986,6 +990,19 @@ def list_of_starters(starters):
         starter_ids = '()'
         return starter_ids
 
+
+#  The max_gs function below is broken.  Not in use.
+def max_gs(team_id, year):
+    cur.execute(f"""
+    SELECT pi.player_id, pi.gs
+    FROM rb1.CalcPitching pi
+    WHERE pi.team_id = {team_id} AND pi.year = {year}
+    ORDER BY pi.gs DESC 
+    LIMIT 5""")
+    result = cur.fetchall()
+    starter_ids = q.list_of_starters(result)
+    return starter_ids
+
 def team_year_batters_starters(team_id, year, starter_ids):
     return f"""
 SELECT p.player_id
@@ -1005,6 +1022,7 @@ SELECT p.player_id
    , b.obp
    , b.woba
    , ROUND(b.war,1) as war
+   , b.r
 
 FROM CalcBatting b INNER JOIN players p on b.player_id = p.player_id
 INNER JOIN positions pos on p.position = pos.position
@@ -1097,6 +1115,7 @@ def team_year_starting_p(team_id, year):
         , p.k9
         , p.bb9
         , p.`K/BB`
+        , ROUND(p.war,1) as war
         
     FROM CalcPitching p INNER JOIN players pl ON p.player_id = pl.player_id
     WHERE p.team_id = {team_id} AND p.year = {year} AND pl.position = 1 AND pl.role = 11
@@ -1133,6 +1152,7 @@ def team_year_bullpen_p(team_id, year):
         , p.k9
         , p.bb9
         , p.`K/BB`
+        , ROUND(p.war,1) as war
 
     FROM CalcPitching p INNER JOIN players pl ON p.player_id = pl.player_id
  WHERE p.team_id = {team_id} AND p.year = {year} AND pl.position = 1 AND pl.role <> 11
@@ -1165,3 +1185,164 @@ def team_year_record(team_id, year):
     INNER JOIN divisions ON team_history_record.division_id = divisions.division_id AND divisions.league_id = leagues.league_id
     INNER JOIN rb1.sub_leagues ON team_history_record.sub_league_id = sub_leagues.sub_league_id and sub_leagues.league_id = leagues.league_id
     WHERE team_id = {team_id} AND year = {year}"""
+
+def current_world_date():
+    return f"""
+    SELECT MAX(leagues.current_date) as current_world_date
+    FROM leagues"""
+
+# Get a list of major leagues
+def get_major_leagues():
+    return "SELECT leagues.league_id FROM leagues WHERE league_level =1"
+
+def get_affiliated_leagues():
+    return f"""
+    SELECT league_id
+    , abbr
+    , name
+    , logo_file_name
+    , league_level
+    , parent_league_id
+    FROM leagues
+    """
+
+def get_div_records(league_id, division_id, sub_league_id=0):
+    return f"""
+    SELECT t.division_id
+    , tr.team_id
+    , tr.g
+    , tr.w
+    , tr.l
+    , tr.pos
+    , tr.pct
+    , tr.gb
+    , tr.streak
+    , tr.magic_number
+    , t.abbr
+    , t.name
+    , t.nickname
+    , t.logo_file_name
+    , t.league_id
+    , l.name
+    , l.parent_league_id
+    , d.name
+
+FROM team_record tr INNER JOIN teams t ON tr.team_id = t.team_id
+INNER JOIN divisions d ON t.division_id = d.division_id AND t.league_id=d.league_id
+INNER JOIN leagues l ON l.league_id = t.league_id AND l.league_id=d.league_id
+WHERE t.league_id = {league_id} AND t.division_id = {division_id}
+ORDER BY tr.gb ASC
+    """
+
+def get_top_5_leaders_historical(league_id, year, division_id):
+    return f"""
+    SELECT CONCAT(p.first_name, ' ', p.last_name) as player
+, pll.category
+, m.stat_short
+, m.stat_long
+, pll.place
+, pll.amount
+, pll.league_id
+, pll.year
+, t.abbr
+, t.division_id
+, pll.player_id
+
+
+FROM players_league_leader pll INNER JOIN players p on pll.player_id=p.player_id
+INNER JOIN players_league_leader_map m ON pll.category=m.category
+INNER JOIN teams t ON p.team_id=t.team_id
+WHERE pll.category IN (2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,22,23,25,26,27,28,30,31,32,34,36,38,40,41,42,43,46,47,48,49,54,56,58,59)
+AND pll.league_id = {league_id} AND pll.year = {year} AND t.division_id = {division_id} AND pll.place <=5
+ORDER BY pll.category asc, pll.place asc
+    """
+
+def get_divs_from_league(league_id):
+    return f"""
+    SELECT division_id, name FROM rb1.divisions WHERE league_id={league_id}"""
+
+def get_current_league_bat_leaders(league_id, division_id, year, stat):
+    """Used to get current year batting leaders """
+    return f"""
+    SELECT CONCAT(p.first_name, ' ', p.last_name) as name
+, b.player_id
+, b.team_id
+, d.division_id
+, d.name as div_name
+, t.abbr
+, b.{stat}
+, b.year
+, b.league_id
+FROM CalcBatting b INNER JOIN players p ON b.player_id=p.player_id
+INNER JOIN teams t ON t.team_id = b.team_id AND p.team_id=b.team_id AND t.team_id=p.team_id
+INNER JOIN divisions d ON t.division_id=d.division_id AND d.league_id = b.league_id AND d.league_id=t.league_id
+WHERE b.league_id={league_id} AND b.year={year} AND d.division_id={division_id}
+ORDER BY b.{stat} DESC
+LIMIT 5
+    """
+
+def get_batting_stats_from_map():
+    return f"""
+    SELECT category, stat_short, calc_name
+    FROM players_league_leader_map
+    WHERE b_p = 'B'
+    """
+
+def get_current_pitch_stats_asc_from_map():
+    return """
+    SELECT category, stat_short, calc_name
+    FROM players_league_leader_map
+    WHERE category IN (40,41,42,46,47)
+    """
+
+def get_current_pitch_stats_desc_from_map():
+    return """
+    SELECT category, stat_short, calc_name
+    FROM players_league_leader_map
+    WHERE category NOT IN (40,41,42,46,47) AND b_p = 'P'
+    """
+
+def get_current_pitch_leaders_asc(league_id, division_id, year, stat):
+    return f"""
+SELECT CONCAT(p.first_name, ' ', p.last_name) as name
+, b.player_id
+, b.team_id
+, d.division_id
+, d.name as div_name
+, t.abbr
+, b.{stat}
+, b.year
+, b.league_id
+FROM rb1.CalcPitching b INNER JOIN players p ON b.player_id=p.player_id
+INNER JOIN teams t ON t.team_id = b.team_id AND p.team_id=b.team_id AND t.team_id=p.team_id
+INNER JOIN divisions d ON t.division_id=d.division_id AND d.league_id = b.league_id AND d.league_id=t.league_id
+WHERE b.league_id={league_id} AND b.year={year} AND d.division_id={division_id}
+ORDER BY b.{stat} ASC
+LIMIT 5
+    """
+
+def get_current_pitch_leaders_desc(league_id, division_id, year, stat):
+    return f"""
+SELECT CONCAT(p.first_name, ' ', p.last_name) as name
+, b.player_id
+, b.team_id
+, d.division_id
+, d.name as div_name
+, t.abbr
+, b.{stat}
+, b.year
+, b.league_id
+FROM rb1.CalcPitching b INNER JOIN players p ON b.player_id=p.player_id
+INNER JOIN teams t ON t.team_id = b.team_id AND p.team_id=b.team_id AND t.team_id=p.team_id
+INNER JOIN divisions d ON t.division_id=d.division_id AND d.league_id = b.league_id AND d.league_id=t.league_id
+WHERE b.league_id={league_id} AND b.year={year} AND d.division_id={division_id}
+ORDER BY b.{stat} desc
+LIMIT 5
+    """
+
+def get_league_info(league_id):
+    return f"""
+    SELECT name, abbr, logo_file_name
+    FROM leagues
+    WHERE league_id={league_id}
+    """
