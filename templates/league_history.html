@@ -1,0 +1,24 @@
+<h1>League History<br>{{ info[0][0] }}</h1>
+
+<table class="league_history">
+    <thead>
+    <tr>
+        <th>Year</th>
+        <th>Champion</th>
+        <th>Best Hitter</th>
+        <th>Best Pitcher</th>
+        <th>Best Rookie</th>
+    </tr>
+    </thead>
+    {% for year in league_history %}
+    <tr>
+        <td>{{ year[0] }}</td>
+        <td><a href="../team/{{ year[2] }}/{{ year[0] }}">{{ year[3] }} {{ year[4] }}</a> </td>
+        <td><a href="../player/{{ year[5] }}">{{ year[6] }}</a> </td>
+        <td><a href="../player/{{ year[7] }}">{{ year[8] }}</a> </td>
+        <td><a href="../player/{{ year[9] }}">{{ year[10] }}</a> </td>
+    </tr>
+    {% endfor %}
+</table>
+
+League History:  {{ league_history }}

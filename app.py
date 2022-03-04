@@ -210,6 +210,15 @@ def league(league_id):
     return render_template('league.html', info=info, year=year, world_date=world_date, leaders_stats_p=leaders_stats_p, leaders_stats_b=leaders_stats_b, results_dict=results_dict, div_records=div_records, divisions=divisions)
 #  NOTE that this function is designed specifically for this league structure- with no subleagues
 
+@app.route('/lg_history/<league_id>')
+def league_history(league_id):
+    conn = mysql.connection
+    cur = conn.cursor()
+    cur.execute(q.get_league_info(league_id))
+    info = cur.fetchall()
+    cur.execute(q.get_league_history(league_id))
+    lg_history = cur.fetchall()
+    return render_template('league_history.html', info=info, league_history=lg_history)
 
 #  TODO change free agent row in teams table to blank nickname instead of null
 #  TODO turn schools.xml file from game into a db table

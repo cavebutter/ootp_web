@@ -1346,3 +1346,24 @@ def get_league_info(league_id):
     FROM leagues
     WHERE league_id={league_id}
     """
+
+def get_league_history(league_id):
+    return f"""   
+   SELECT th.year
+, th.league_id
+, th.team_id
+, t.name
+, t.nickname
+, lh.best_hitter_id
+, CONCAT(p1.first_name, ' ', p1.last_name) as hitter
+, lh.best_pitcher_id
+, CONCAT(p2.first_name, ' ', p2.last_name) as pitcher
+, lh.best_rookie_id
+, CONCAT(p3.first_name, ' ', p3.last_name) as rookie
+FROM team_history th INNER JOIN teams t ON th.team_id = t.team_id
+INNER JOIN league_history lh ON lh.year = th.year AND lh.league_id = t.league_id
+INNER JOIN players p1 ON lh.best_hitter_id = p1.player_id
+INNER JOIN players p2 ON lh.best_pitcher_id = p2.player_id
+LEFT JOIN players p3 ON lh.best_rookie_id = p3.player_id
+WHERE th.won_playoffs = 1 AND th.league_id = {league_id}
+ORDER BY th.year"""
