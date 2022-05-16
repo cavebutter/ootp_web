@@ -1,0 +1,35 @@
+<h1>League History<br>{{ info[0][0] }}<br>{{ year }}</h1>
+<img src="../../static/images/leagues/{{ info[0][2] }}" />
+
+<h2>Season Standings</h2>
+{% for key, value in div_records.items() %}
+<table class="standings">
+    <thead>
+    <caption>{{ key }}</caption>
+    <tr>
+        <th>Pos</th>
+        <th>Team</th>
+        <th>G</th>
+        <th>W</th>
+        <th>L</th>
+        <th>%</th>
+        <th>GB</th>
+    </tr>
+    </thead>
+    {% for team in value %}
+        <tr>
+        <td>{{ team[6] }}</td>
+        <td><a href="../../team/{{ team[0] }}/{{ year }}"> {{ team[4] }} {{ team[5] }}</a></td>
+        <td>{{ team[11] }}</td>
+        <td>{{ team[7] }}</td>
+        <td>{{ team[8] }}</td>
+        <td>{{ team[9]|round(3)|string|replace("0.",".") }}</td>
+        <td>{{ team[10] }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endfor %}
+
+<p>DIV RECORDS:  {{ div_records }}</p>
+<p>TEAM BATTING:  {{ team_batting }}</p>
+<p>TEAM PITCHING:  {{ team_pitching }}</p>

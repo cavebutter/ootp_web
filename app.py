@@ -220,6 +220,39 @@ def league_history(league_id):
     lg_history = cur.fetchall()
     return render_template('league_history.html', info=info, league_history=lg_history)
 
+@app.route('/lg_history/<league_id>/<year>')
+def league_history_year(league_id, year):
+    conn = mysql.connection
+    cur = conn.cursor()
+    year = year
+    cur.execute(q.get_league_info(league_id))
+    info = cur.fetchall()
+    cur.execute(q.get_divs_from_league(league_id))
+    div_records = {}
+    team_batting = {}
+    team_pitching = {}
+    divisions = cur.fetchall()
+    for division in divisions:
+        div_id = division[0]
+        div_name = division[1]
+        cur.execute(q.get_div_history_records(league_id,div_id,year))
+        record = cur.fetchall()
+        div_records[div_name] = record
+
+        cur.execute(q.get_team_history_batting(league_id, div_id, year))
+        batting_record = cur.fetchall()
+        team_batting[div_name] = batting_record
+
+        cur.execute(q.get_team_history_pitching(league_id, div_id, year))
+        pitching_record = cur.fetchall()
+        team_pitching[div_name] = pitching_record
+
+
+
+
+
+    return render_template('league_history_year.html', year=year, div_records=div_records, team_batting=team_batting, team_pitching=team_pitching, info=info)
+
 #  TODO change free agent row in teams table to blank nickname instead of null
 #  TODO turn schools.xml file from game into a db table
 #  TODO summary queries to union with player stats queries

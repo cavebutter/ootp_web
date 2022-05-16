@@ -1342,7 +1342,7 @@ LIMIT 5
 
 def get_league_info(league_id):
     return f"""
-    SELECT name, abbr, logo_file_name
+    SELECT name, abbr, logo_file_name, league_id
     FROM leagues
     WHERE league_id={league_id}
     """
@@ -1367,3 +1367,40 @@ INNER JOIN players p2 ON lh.best_pitcher_id = p2.player_id
 LEFT JOIN players p3 ON lh.best_rookie_id = p3.player_id
 WHERE th.won_playoffs = 1 AND th.league_id = {league_id}
 ORDER BY th.year"""
+
+def get_div_history_records(league_id, division, year):
+    return f"""
+    SELECT thr.team_id
+    , thr.year
+    , thr.league_id
+    , thr.division_id
+    , t.name
+    , t.nickname
+    , thr.pos
+    , thr.w
+    , thr.l
+    , thr.pct
+    , thr.gb
+    , thr.g
+    FROM rb1.team_history_record thr INNER JOIN teams t ON thr.team_id = t.team_id AND t.league_id = thr.league_id AND t.division_id = thr.division_id AND t.sub_league_id = thr.sub_league_id
+    WHERE thr.league_id = {league_id} AND thr.division_id = {division} AND thr.year = {year}
+    ORDER BY thr.pos ASC 
+    """
+
+def get_team_history_batting(league_id, division_id, year):
+    return f"""
+    SELECT thbs.*, 
+    t.name,
+    t.nickname
+    from team_history_batting_stats thbs INNER JOIN teams t ON thbs.team_id = t.team_id AND thbs.league_id = t.league_id AND thbs.sub_league_id = t.sub_league_id AND thbs.division_id = t.division_id
+    WHERE thbs.league_id = {league_id} AND thbs.year = {year} AND thbs.division_id = {division_id}
+    """
+
+def get_team_history_pitching(league_id, division_id, year):
+    return f"""
+        SELECT thbs.*, 
+        t.name,
+        t.nickname
+        from team_history_pitching_stats thbs INNER JOIN teams t ON thbs.team_id = t.team_id AND thbs.league_id = t.league_id AND thbs.sub_league_id = t.sub_league_id AND thbs.division_id = t.division_id
+        WHERE thbs.league_id = {league_id} AND thbs.year = {year} AND thbs.division_id = {division_id}
+        """

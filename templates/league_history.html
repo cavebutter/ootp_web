@@ -1,5 +1,5 @@
 <h1>League History<br>{{ info[0][0] }}</h1>
-
+<img src="../static/images/leagues/{{ info[0][2] }}" />
 <table class="league_history">
     <thead>
     <tr>
@@ -10,13 +10,13 @@
         <th>Best Rookie</th>
     </tr>
     </thead>
-    {% for year in league_history %}
+    {% for entry in league_history %}
     <tr>
-        <td>{{ year[0] }}</td>
-        <td><a href="../team/{{ year[2] }}/{{ year[0] }}">{{ year[3] }} {{ year[4] }}</a> </td>
-        <td><a href="../player/{{ year[5] }}">{{ year[6] }}</a> </td>
-        <td><a href="../player/{{ year[7] }}">{{ year[8] }}</a> </td>
-        <td><a href="../player/{{ year[9] }}">{{ year[10] }}</a> </td>
+        <td><a href="../lg_history/{{ entry[1] }}/{{ entry[0] }}"> {{ entry[0] }}</a></td>
+        <td><a href="../team/{{ entry[2] }}/{{ entry[0] }}">{{ entry[3] }} {{ entry[4] }}</a> </td>
+        <td><a href="../player/{{ entry[5] }}">{{ entry[6] }}</a> </td>
+        <td><a href="../player/{{ entry[7] }}">{{ entry[8] }}</a> </td>
+        <td><a href="../player/{{ entry[9] }}">{{ entry[10] }}</a> </td>
     </tr>
     {% endfor %}
 </table>
